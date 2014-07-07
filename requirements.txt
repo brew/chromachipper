@@ -1,0 +1,10 @@
+Flask==0.10.1
+Flat==0.1
+Jinja2==2.7.3
+MarkupSafe==0.23
+Werkzeug==0.9.6
+gunicorn==19.0.0
+itsdangerous==0.24
+tweepy==2.3.0
+webcolors==1.4
+wsgiref==0.1.2
