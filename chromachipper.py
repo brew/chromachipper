@@ -58,7 +58,7 @@ def make_chromachip_png(hex_list, width=600, height=600):
     return p.image(kind='rgb').png()
 
 
-def get_colours_from_message(message):
+def get_colours_from_message(message, reg=re.compile(r'#[0-9A-F]{6}|#[0-9A-F]{3}\b', re.I)):
     """
     Harvest hex colour values of 3 or 6 characters in length from the message
     string and return a normalized list.
@@ -95,7 +95,7 @@ def get_colours_from_message(message):
     """
     # Replace all '0x' with '#'
     message = message.replace('0x', '#')
-    colours = re.findall(r'#[0-9A-F]{6}|#[0-9A-F]{3}\b', message, re.I)
+    colours = reg.findall(message)
     normalized_colours = [normalize_hex(colour) for colour in colours]
     return normalized_colours
 
