@@ -66,10 +66,19 @@ def get_colours_from_message(message):
     >>> get_colours_from_message("#0ef")
     ['#00eeff']
 
+    >>> get_colours_from_message("0x0ef")
+    ['#00eeff']
+
     >>> get_colours_from_message("#663399")
     ['#663399']
 
+    >>> get_colours_from_message("0x663399")
+    ['#663399']
+
     >>> get_colours_from_message("Colour in a #ff0000 mixed message")
+    ['#ff0000']
+
+    >>> get_colours_from_message("Colour in a 0xff0000 mixed message")
     ['#ff0000']
 
     >>> get_colours_from_message("#d00#bar")
@@ -78,12 +87,17 @@ def get_colours_from_message(message):
     >>> get_colours_from_message("Muliple colours! #0ff, #ff000 #00ff00. #d00#bar")
     ['#00ffff', '#00ff00', '#dd0000']
 
+    >>> get_colours_from_message("Muliple colours! 0x0ff, 0xff000 0x00ff00. 0xd000xbar")
+    ['#00ffff', '#00ff00', '#dd0000']
+
     >>> get_colours_from_message("No colours in this message :(")
     []
     """
-    hexs = re.findall(r'#[0-9A-F]{6}|#[0-9A-F]{3}\b', message, re.I)
-    normalized_hexs = [normalize_hex(hex) for hex in hexs]
-    return normalized_hexs
+    # Replace all '0x' with '#'
+    message = message.replace('0x', '#')
+    colours = re.findall(r'#[0-9A-F]{6}|#[0-9A-F]{3}\b', message, re.I)
+    normalized_colours = [normalize_hex(colour) for colour in colours]
+    return normalized_colours
 
 
 if __name__ == '__main__':
