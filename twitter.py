@@ -23,6 +23,11 @@ class ChromachipStreamListener(tweepy.StreamListener):
         "Colo(u)rs!",
         "Huetiful!",
         "There you go!",
+        "What's better than chips? Chroma Chips!",
+        "Looking good!",
+        "No probs!",
+        "I made this especially for you!",
+        "Great!",
     ]
 
     def __init__(self, *args, **kwargs):
