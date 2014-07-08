@@ -62,36 +62,6 @@ def get_colours_from_message(message, reg=re.compile(r'#[0-9A-F]{6}|#[0-9A-F]{3}
     """
     Harvest hex colour values of 3 or 6 characters in length from the message
     string and return a normalized list.
-
-    >>> get_colours_from_message("#0ef")
-    ['#00eeff']
-
-    >>> get_colours_from_message("0x0ef")
-    ['#00eeff']
-
-    >>> get_colours_from_message("#663399")
-    ['#663399']
-
-    >>> get_colours_from_message("0x663399")
-    ['#663399']
-
-    >>> get_colours_from_message("Colour in a #ff0000 mixed message")
-    ['#ff0000']
-
-    >>> get_colours_from_message("Colour in a 0xff0000 mixed message")
-    ['#ff0000']
-
-    >>> get_colours_from_message("#d00#bar")
-    ['#dd0000']
-
-    >>> get_colours_from_message("Muliple colours! #0ff, #ff000 #00ff00. #d00#bar")
-    ['#00ffff', '#00ff00', '#dd0000']
-
-    >>> get_colours_from_message("Muliple colours! 0x0ff, 0xff000 0x00ff00. 0xd000xbar")
-    ['#00ffff', '#00ff00', '#dd0000']
-
-    >>> get_colours_from_message("No colours in this message :(")
-    []
     """
     # Replace all '0x' with '#'
     message = message.replace('0x', '#')
