@@ -40,8 +40,6 @@ class ChromachipStreamListener(tweepy.StreamListener):
             if colours:
                 print("Sending a ChromaChip to @%s" % status.user.screen_name)
                 self.reply_to_status(status.user.screen_name, status.id, colours)
-            # else:
-            #     print("No colours to reply to.")
         return True
 
     def on_error(self, status_code):
