@@ -39,10 +39,10 @@ def test_chromachipper_with_message():
     return "No colours in the message :(", 400  # Bad Request status
 
 
-def make_chromachip_png(hex_list, width=600, height=600):
+def make_chromachip_png(colour_list, width=600, height=600):
     """
     Use flat to generate and return png data with the colours specified in
-    the hex_list.
+    the colour_list.
     """
 
     doc_height = height
@@ -50,11 +50,14 @@ def make_chromachip_png(hex_list, width=600, height=600):
 
     d = document(doc_width, doc_height, 'pt')
     p = d.addpage()
-    chip_width = doc_width / len(hex_list)
-    for i, hex in enumerate(hex_list):
-        chip_rgb = rgb(*hex_to_rgb(hex))
-        colour_thing = shape().nostroke().fill(chip_rgb)
-        p.place(colour_thing.rect(i * chip_width, 0, chip_width, doc_height))
+    chip_height = doc_height / len(colour_list)
+    for i, row in enumerate(colour_list):
+        chip_width = doc_width / len(row)
+        chip_y = i * chip_height
+        for j, colour in enumerate(row):
+            chip_rgb = rgb(*hex_to_rgb(colour))
+            colour_thing = shape().nostroke().fill(chip_rgb)
+            p.place(colour_thing.rect(j * chip_width, chip_y, chip_width, chip_height))
     return p.image(kind='rgb').png()
 
 
@@ -63,10 +66,15 @@ def get_colours_from_message(message, reg=re.compile(r'#[0-9A-F]{6}|#[0-9A-F]{3}
     Harvest hex colour values of 3 or 6 characters in length from the message
     string and return a normalized list.
     """
+
     # Replace all '0x' with '#'
     message = message.replace('0x', '#')
-    colours = reg.findall(message)
-    normalized_colours = [normalize_hex(colour) for colour in colours]
+    lines = message.split('\n')
+    normalized_colours = []
+    for line in lines:
+        colours = reg.findall(line)
+        if colours:
+            normalized_colours.append([normalize_hex(colour) for colour in colours])
     return normalized_colours
 
 
