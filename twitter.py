@@ -71,7 +71,16 @@ class ChromachipStreamListener(tweepy.StreamListener):
             string_buffer.seek(0)
 
             if mentions:
-                reply_text = "@{} sent you a Chroma Chip! {}".format(reply_to, " ".join(mentions))
+                mentions_str = " ".join(mentions)
+                reply_text = "@{} {} {}".format(reply_to, self.MENTIONS_REPLY_LONG, mentions_str)
+                # proposed reply too long?
+                if len(reply_text) > 140:
+                    # use shorter reply text
+                    if (len(reply_text) - len(self.MENTIONS_REPLY_LONG)) + len(self.MENTIONS_REPLY_SHORT) <= 140:
+                        reply_text = "@{} {} {}".format(reply_to, self.MENTIONS_REPLY_SHORT, mentions_str)
+                    else:
+                        # still too long? use no reply text
+                        reply_text = "@{} {}".format(reply_to, mentions_str)
             else:
                 reply_text = '@{} {}'.format(reply_to, self.get_random_reply())
 

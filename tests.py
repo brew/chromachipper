@@ -117,3 +117,107 @@ class StreamListenerTest(unittest.TestCase):
         listener.on_status(self.status_without_mentions)
         self.assertNotEqual(self.api.last_status, u"@IWantToGive sent you a Chroma Chip! @GiftToMe @GiftToMeToo")
         self.assertTrue(self.api.last_status.replace("@IWantToGive ", "") in ChromachipStreamListener.REPLIES)
+
+
+class MentionsReplyLengthTest(unittest.TestCase):
+
+    def setUp(self):
+        self.status_base_obj = {
+            u'contributors': None,
+            u'truncated': False,
+            u'in_reply_to_status_id': None,
+            u'id': 487394915643842560,
+            u'retweeted': False,
+            u'entities': {
+                u'symbols': [],
+                u'hashtags': [{u'indices': [97, 104], u'text': u'00b9f1'}],
+                u'urls': []},
+            u'in_reply_to_screen_name': u'chromachipper',
+            u'id_str': u'487394915643842560',
+            u'in_reply_to_user_id': 00000000,
+            u'user': {
+                u'id': 725633,
+                u'id_str': u'725633',
+                u'screen_name': u'IWantToGift2U',
+                u'name': u'I am a Giver',
+            },
+        }
+
+        self.api = MockAPI()
+
+    def test_longreply_with_mentions(self):
+        """
+        A reply from chromachipper of 140 characters uses the correct reply
+        text.
+        """
+
+        # This will cause chromachipper to create a reply of 140 chars with long reply text.
+        status_140_char_obj = copy.deepcopy(self.status_base_obj)
+        status_140_char_obj['text'] = u'@chromachipper #000 @abcdefghijklmno @pqrstuvwxyzabcd @efghijklmnopqur @stuvqxyzabcdefg @hijklmnopqrstuv @wxyzabcdefghijk'
+        status_140_char_obj['entities']['user_mentions'] = [
+            {u'id': 00000000, u'indices': [0, 14], u'id_str': u'00000000', u'screen_name': u'chromachipper', u'name': u'Chroma Chipper'},
+            {u'id': 11111111, u'indices': [85, 96], u'id_str': u'11111111', u'screen_name': u'abcdefghijklmno', u'name': u'abcdefghijklmno'},
+            {u'id': 22222222, u'indices': [85, 96], u'id_str': u'22222222', u'screen_name': u'pqrstuvwxyzabcd', u'name': u'pqrstuvwxyzabcd'},
+            {u'id': 33333333, u'indices': [85, 96], u'id_str': u'33333333', u'screen_name': u'efghijklmnopqur', u'name': u'efghijklmnopqur'},
+            {u'id': 44444444, u'indices': [85, 96], u'id_str': u'44444444', u'screen_name': u'stuvqxyzabcdefg', u'name': u'stuvqxyzabcdefg'},
+            {u'id': 55555555, u'indices': [85, 96], u'id_str': u'55555555', u'screen_name': u'hijklmnopqrstuv', u'name': u'hijklmnopqrstuv'},
+            {u'id': 66666666, u'indices': [85, 96], u'id_str': u'66666666', u'screen_name': u'wxyzabcdefghijk', u'name': u'wxyzabcdefghijk'},
+        ]
+        status_140_char = Status.parse(api=API(), json=status_140_char_obj)
+
+        listener = ChromachipStreamListener(api=self.api, twitter_id=00000000)
+        listener.on_status(status_140_char)
+
+        self.assertEqual(self.api.last_status, u"@IWantToGift2U sent you a Chroma Chip! @abcdefghijklmno @pqrstuvwxyzabcd @efghijklmnopqur @stuvqxyzabcdefg @hijklmnopqrstuv @wxyzabcdefghijk")
+        self.assertEqual(len(self.api.last_status), 140)
+
+    def test_shortreply_with_mentions(self):
+        """
+        A reply from chromachipper uses the short reply where necessary.
+        """
+
+        # This will cause chromachipper to create a reply with short reply text.
+        status_morethan140_char_obj = copy.deepcopy(self.status_base_obj)
+        status_morethan140_char_obj['text'] = u'@chromachipper #000 @abcdefghijklmno @pqrstuvwxyzabcd @efghijklmnopqur @stuvqxyzabcdefg @hijklmnopqrstuv @wxyzabcdefghijk @ashortreply'
+        status_morethan140_char_obj['entities']['user_mentions'] = [
+            {u'id': 00000000, u'indices': [0, 14], u'id_str': u'00000000', u'screen_name': u'chromachipper', u'name': u'Chroma Chipper'},
+            {u'id': 11111111, u'indices': [85, 96], u'id_str': u'11111111', u'screen_name': u'abcdefghijklmno', u'name': u'abcdefghijklmno'},
+            {u'id': 22222222, u'indices': [85, 96], u'id_str': u'22222222', u'screen_name': u'pqrstuvwxyzabcd', u'name': u'pqrstuvwxyzabcd'},
+            {u'id': 33333333, u'indices': [85, 96], u'id_str': u'33333333', u'screen_name': u'efghijklmnopqur', u'name': u'efghijklmnopqur'},
+            {u'id': 44444444, u'indices': [85, 96], u'id_str': u'44444444', u'screen_name': u'stuvqxyzabcdefg', u'name': u'stuvqxyzabcdefg'},
+            {u'id': 55555555, u'indices': [85, 96], u'id_str': u'55555555', u'screen_name': u'hijklmnopqrstuv', u'name': u'hijklmnopqrstuv'},
+            {u'id': 66666666, u'indices': [85, 96], u'id_str': u'66666666', u'screen_name': u'wxyzabcdefghijk', u'name': u'wxyzabcdefghijk'},
+            {u'id': 77777777, u'indices': [85, 96], u'id_str': u'77777777', u'screen_name': u'ashortreply', u'name': u'ashortreply'},
+        ]
+        status_140_char = Status.parse(api=API(), json=status_morethan140_char_obj)
+
+        listener = ChromachipStreamListener(api=self.api, twitter_id=00000000)
+        listener.on_status(status_140_char)
+
+        self.assertEqual(self.api.last_status, u"@IWantToGift2U sent this! @abcdefghijklmno @pqrstuvwxyzabcd @efghijklmnopqur @stuvqxyzabcdefg @hijklmnopqrstuv @wxyzabcdefghijk @ashortreply")
+        self.assertEqual(len(self.api.last_status), 140)
+
+    def test_140_char_shortreply_with_mentions(self):
+        """
+        A reply from chromachipper uses no reply text where necessary.
+        """
+
+        # This will cause chromachipper to create a reply with no reply text.
+        status_morethan140_char_obj = copy.deepcopy(self.status_base_obj)
+        status_morethan140_char_obj['text'] = u'@chromachipper #000 @abcdefghijklmno @pqrstuvwxyzabcd @efghijklmnopqur @stuvqxyzabcdefg @hijklmnopqrstuv @wxyzabcdefghijk @anoreplymaximum'
+        status_morethan140_char_obj['entities']['user_mentions'] = [
+            {u'id': 00000000, u'indices': [0, 14], u'id_str': u'00000000', u'screen_name': u'chromachipper', u'name': u'Chroma Chipper'},
+            {u'id': 11111111, u'indices': [85, 96], u'id_str': u'11111111', u'screen_name': u'abcdefghijklmno', u'name': u'abcdefghijklmno'},
+            {u'id': 22222222, u'indices': [85, 96], u'id_str': u'22222222', u'screen_name': u'pqrstuvwxyzabcd', u'name': u'pqrstuvwxyzabcd'},
+            {u'id': 33333333, u'indices': [85, 96], u'id_str': u'33333333', u'screen_name': u'efghijklmnopqur', u'name': u'efghijklmnopqur'},
+            {u'id': 44444444, u'indices': [85, 96], u'id_str': u'44444444', u'screen_name': u'stuvqxyzabcdefg', u'name': u'stuvqxyzabcdefg'},
+            {u'id': 55555555, u'indices': [85, 96], u'id_str': u'55555555', u'screen_name': u'hijklmnopqrstuv', u'name': u'hijklmnopqrstuv'},
+            {u'id': 66666666, u'indices': [85, 96], u'id_str': u'66666666', u'screen_name': u'wxyzabcdefghijk', u'name': u'wxyzabcdefghijk'},
+            {u'id': 77777777, u'indices': [85, 96], u'id_str': u'77777777', u'screen_name': u'anoreplymaximum', u'name': u'anoreplymaximum'},
+        ]
+        status_140_char = Status.parse(api=API(), json=status_morethan140_char_obj)
+
+        listener = ChromachipStreamListener(api=self.api, twitter_id=00000000)
+        listener.on_status(status_140_char)
+
+        self.assertEqual(self.api.last_status, u"@IWantToGift2U @abcdefghijklmno @pqrstuvwxyzabcd @efghijklmnopqur @stuvqxyzabcdefg @hijklmnopqrstuv @wxyzabcdefghijk @anoreplymaximum")
