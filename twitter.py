@@ -23,6 +23,8 @@ class ChromachipStreamListener(tweepy.StreamListener):
         "I made this especially for you!",
         "Great!",
     ]
+    MENTIONS_REPLY_LONG = "sent you a Chroma Chip!"
+    MENTIONS_REPLY_SHORT = "sent this!"
 
     def __init__(self, api, twitter_id, *args, **kwargs):
         super(ChromachipStreamListener, self).__init__(*args, **kwargs)
@@ -36,12 +38,12 @@ class ChromachipStreamListener(tweepy.StreamListener):
             if colours:
                 reply_to = status.user.screen_name
                 # Make a list of mentioned screen_names, not including myself.
-                mentions = ["@%s" % d.get('screen_name') for d in status.entities['user_mentions'] if d.get('id') != self.twitter_id]
+                mentions = ["@{}".format(d.get('screen_name')) for d in status.entities['user_mentions'] if d.get('id') != self.twitter_id]
                 self.reply_to_status(reply_to, status.id, colours, mentions)
         return True
 
     def on_error(self, status_code):
-        print("Got an error with code %s" % str(status_code))
+        print("Got an error with code {}".format(str(status_code)))
         return True
 
     def on_timeout(self):
@@ -69,13 +71,13 @@ class ChromachipStreamListener(tweepy.StreamListener):
             string_buffer.seek(0)
 
             if mentions:
-                reply_text = "@%s sent you a Chroma Chip! %s" % (reply_to, " ".join(mentions))
+                reply_text = "@{} sent you a Chroma Chip! {}".format(reply_to, " ".join(mentions))
             else:
-                reply_text = '@%s %s' % (reply_to, self.get_random_reply())
+                reply_text = '@{} {}'.format(reply_to, self.get_random_reply())
 
             self.api.update_with_media('chromachip.png', reply_text, in_reply_to_status_id=id, file=string_buffer)
         except tweepy.error.TweepError as e:
-            print("An error! %s " % e)
+            print("An error! {} ".format(e))
 
 
 if __name__ == '__main__':
