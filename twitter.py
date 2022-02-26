@@ -34,7 +34,7 @@ class ChromachipStreamListener(tweepy.StreamListener):
 
     def on_status(self, status):
         print(status)
-        if status.in_reply_to_user_id_str == self.twitter_id:
+        if status.in_reply_to_user_id == self.twitter_id:
             colours = get_colours_from_message(status.text)
             if colours:
                 reply_to = status.user.screen_name
@@ -92,7 +92,7 @@ class ChromachipStreamListener(tweepy.StreamListener):
 
 if __name__ == '__main__':
     app_id = os.environ.get('APP_ID')
-    twitter_id = os.environ.get('TWITTER_ID')
+    twitter_id = int(os.environ.get('TWITTER_ID'))
     consumer_token = os.environ.get('CONSUMER_TOKEN')
     consumer_secret = os.environ.get('CONSUMER_SECRET')
     access_token = os.environ.get('ACCESS_TOKEN')
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
     auth.set_access_token(access_token, access_secret)
     api = tweepy.API(auth)
-    listener = ChromachipStreamListener(api, app_id)
+    listener = ChromachipStreamListener(api, twitter_id)
 
     stream = tweepy.Stream(auth, listener)
     stream.filter(follow=[twitter_id], is_async=True)
