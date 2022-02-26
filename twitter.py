@@ -91,6 +91,7 @@ class ChromachipStreamListener(tweepy.StreamListener):
 
 
 if __name__ == '__main__':
+    app_id = os.environ.get('APP_ID')
     twitter_id = os.environ.get('TWITTER_ID')
     consumer_token = os.environ.get('CONSUMER_TOKEN')
     consumer_secret = os.environ.get('CONSUMER_SECRET')
@@ -100,7 +101,7 @@ if __name__ == '__main__':
     auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
     auth.set_access_token(access_token, access_secret)
     api = tweepy.API(auth)
-    listener = ChromachipStreamListener(api, twitter_id)
+    listener = ChromachipStreamListener(api, app_id)
 
     stream = tweepy.Stream(auth, listener)
     stream.filter(follow=[twitter_id])
