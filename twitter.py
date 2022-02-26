@@ -102,4 +102,4 @@ if __name__ == '__main__':
     listener = ChromachipStreamListener(api, twitter_id)
 
     stream = tweepy.Stream(auth, listener)
-    stream.userstream("with=user")
+    stream.filter(follow=[twitter_id])
