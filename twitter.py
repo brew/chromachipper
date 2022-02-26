@@ -104,4 +104,4 @@ if __name__ == '__main__':
     listener = ChromachipStreamListener(api, app_id)
 
     stream = tweepy.Stream(auth, listener)
-    stream.filter(follow=[twitter_id])
+    stream.filter(follow=[twitter_id], is_async=True)
