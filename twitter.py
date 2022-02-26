@@ -90,7 +90,7 @@ class ChromachipStreamListener(tweepy.StreamListener):
 
 
 if __name__ == '__main__':
-    twitter_id = int(os.environ.get('TWITTER_ID'))
+    twitter_id = os.environ.get('TWITTER_ID')
     consumer_token = os.environ.get('CONSUMER_TOKEN')
     consumer_secret = os.environ.get('CONSUMER_SECRET')
     access_token = os.environ.get('ACCESS_TOKEN')
