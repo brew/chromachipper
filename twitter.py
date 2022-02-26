@@ -33,6 +33,7 @@ class ChromachipStreamListener(tweepy.StreamListener):
         self.last_reply = None
 
     def on_status(self, status):
+        print(status)
         if status.in_reply_to_user_id == self.twitter_id:
             colours = get_colours_from_message(status.text)
             if colours:
